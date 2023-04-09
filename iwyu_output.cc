@@ -2012,6 +2012,33 @@ LineSortKey GetSortKey(const OneIncludeOrForwardDeclareLine& line,
   return LineSortKey(GetLineSortOrdinal(line, associated_quoted_includes, file_info), line.line());
 }
 
+namespace ansi
+{
+string bold(const string& input)
+{
+  if(!withColor()) {
+    return input;
+  }
+  return "\x1B[1m" + input + "\x1B[0m";
+}
+
+string green(const string& input)
+{
+  if(!withColor()) {
+    return input;
+  }
+  return "\x1B[32;1m" + input + "\x1B[0m";
+}
+
+string red(const string& input)
+{
+  if(!withColor()) {
+    return input;
+  }
+  return "\x1B[31;1m" + input + "\x1B[0m";
+}
+}
+
 // filename is "this" filename: the file being emitted.
 // associated_filepaths are the quoted-include form of associated_headers_.
 size_t PrintableDiffs(const string& filename,
@@ -2020,7 +2047,6 @@ size_t PrintableDiffs(const string& filename,
                       const vector<OneIncludeOrForwardDeclareLine>& lines,
                       string* diff_output) {
   CHECK_(diff_output && "Must provide diff_output");
-
   string& output = *diff_output;
   vector<OutputLine> output_lines;
 
@@ -2051,7 +2077,7 @@ size_t PrintableDiffs(const string& filename,
     }
   }
   if (no_adds_or_deletes && !GlobalFlags().update_comments) {
-    output = "\n(" + filename + " has correct #includes/fwd-decls)\n";
+    output = "\n" + ansi::green(filename) + " has " + ansi::green("correct") + " #includes/fwd-decls\n";
     return 0;
   }
 
@@ -2060,7 +2086,7 @@ size_t PrintableDiffs(const string& filename,
   // First, new desired includes and forward-declares.
   if (ShouldPrint(1)) {
     output_lines.push_back(
-      OutputLine("\n" + filename + " should add these lines:"));
+      OutputLine("\n" + ansi::red(filename) + " should add these lines:"));
     for (const auto& key_line : sorted_lines) {
       const OneIncludeOrForwardDeclareLine* line = key_line.second;
       if (line->is_desired() && !line->is_present()) {
@@ -2074,7 +2100,7 @@ size_t PrintableDiffs(const string& filename,
   // Second, includes and forward-declares that should be removed.
   if (ShouldPrint(1)) {
     output_lines.push_back(
-        OutputLine("\n" + filename + " should remove these lines:"));
+      OutputLine("\n" + ansi::red(filename) + " should remove these lines:"));
     for (const auto& key_line : sorted_lines) {
       const OneIncludeOrForwardDeclareLine* line = key_line.second;
       if (line->is_present() && !line->is_desired()) {
@@ -2090,7 +2116,7 @@ size_t PrintableDiffs(const string& filename,
   // Finally, print the final, complete include-and-forward-declare list.
   if (ShouldPrint(0)) {
     output_lines.push_back(
-      OutputLine("\nThe full include-list for " + filename + ":"));
+      OutputLine(ansi::bold("\nThe full include-list for " + filename + ":")));
     for (const auto& key_line : sorted_lines) {
       const OneIncludeOrForwardDeclareLine* line = key_line.second;
       if (line->is_desired()) {

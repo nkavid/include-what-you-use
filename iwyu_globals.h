@@ -87,6 +87,7 @@ struct CommandlineFlags {
   set<string> keep;        // -k: globs to force-keep includes for
   bool transitive_includes_only;   // -t: don't add 'new' #includes to files
   int verbose;             // -v: how much information to emit as we parse
+  bool with_color;             // -C: print output with color
   vector<string> mapping_files; // -m: mapping files
   bool no_default_mappings;     // -n: no default mappings
   // Truncate output lines to this length. No short option.
@@ -99,7 +100,7 @@ struct CommandlineFlags {
   bool comments_with_namespace; // Show namespace in 'why' comments.
   bool no_fwd_decls;  // Disable forward declarations.
   bool quoted_includes_first; // Place quoted includes first in sort order.
-  bool cxx17ns; // -C: C++17 nested namespace syntax
+  bool cxx17ns; // -N: C++17 nested namespace syntax
   int exit_code_error;   // Exit with this code for iwyu violations.
   int exit_code_always;  // Always exit with this exit code.
   set<string> dbg_flags; // Debug flags.

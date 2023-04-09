@@ -20,6 +20,9 @@ class FileEntry;
 
 namespace include_what_you_use {
 
+void EnableColor();
+bool withColor();
+
 void SetVerboseLevel(int level);
 int GetVerboseLevel();
 

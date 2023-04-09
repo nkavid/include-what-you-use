@@ -213,6 +213,7 @@ int CommandlineFlags::ParseArgv(int argc, char** argv) {
     {"keep", required_argument, nullptr, 'k'},  // can be specified >once
     {"transitive_includes_only", no_argument, nullptr, 't'},
     {"verbose", required_argument, nullptr, 'v'},
+    {"with_color", no_argument, nullptr, 'C'},
     {"mapping_file", required_argument, nullptr, 'm'},
     {"no_default_mappings", no_argument, nullptr, 'n'},
     {"prefix_header_includes", required_argument, nullptr, 'x'},
@@ -223,7 +224,7 @@ int CommandlineFlags::ParseArgv(int argc, char** argv) {
     {"update_comments", no_argument, nullptr, 'u'},
     {"no_fwd_decls", no_argument, nullptr, 'f'},
     {"quoted_includes_first", no_argument, nullptr, 'q' },
-    {"cxx17ns", no_argument, nullptr, 'C'},
+    {"cxx17ns", no_argument, nullptr, 'N'},
     {"error", optional_argument, nullptr, 'e'},
     {"error_always", optional_argument, nullptr, 'a'},
     {"debug", required_argument, nullptr, 'd'},
@@ -237,6 +238,7 @@ int CommandlineFlags::ParseArgv(int argc, char** argv) {
       case 'k': AddGlobToKeepIncludes(optarg); break;
       case 't': transitive_includes_only = true; break;
       case 'v': verbose = atoi(optarg); break;
+      case 'C': with_color = true; break;
       case 'm': mapping_files.push_back(optarg); break;
       case 'n': no_default_mappings = true; break;
       case 'o': no_comments = true; break;
@@ -272,7 +274,7 @@ int CommandlineFlags::ParseArgv(int argc, char** argv) {
         CHECK_((max_line_length >= 0) && "Max line length must be positive");
         break;
       case 'q': quoted_includes_first = true; break;
-      case 'C': cxx17ns = true; break;
+      case 'N': cxx17ns = true; break;
       case 'e':
         if (!optarg) {
           exit_code_error = EXIT_FAILURE;
@@ -358,6 +360,9 @@ static int ParseIwyuCommandlineFlags(int argc, char** argv) {
   commandline_flags = new CommandlineFlags;
   const int retval = commandline_flags->ParseArgv(argc, argv);
   SetVerboseLevel(commandline_flags->verbose);
+  if (commandline_flags->with_color) {
+    EnableColor();
+  }
 
   VERRS(4) << "Setting verbose-level to " << commandline_flags->verbose << "\n";
 

@@ -19,7 +19,16 @@ using clang::FileEntry;
 
 namespace {
 int verbose_level = 1;
+bool with_color = false;
 }  // namespace
+
+void EnableColor() {
+  with_color = true;
+}
+
+bool withColor() {
+  return with_color;
+}
 
 void SetVerboseLevel(int level) {
   verbose_level = level;
